@@ -159,19 +159,20 @@ for file_link in file_links:
             # Extract text from the file
             file_text = extract(downloaded_file_path)
 
-            # Store the extracted text in ChromaDB
-            for i, page_text in enumerate(file_text):
-                collection.add(
-                    ids=[str(i)], # Unique ID per document or section
-                    documents=[page_text],
-                    metadatas=[{"document": file_link}] # Store the file link as metadata
-                    )
+            #Combine all page texts into one document
+            full_text = "\n".join(file_text)
 
+            # Store the full document in ChromaDB
+            collection.add(
+                ids=[file_link],
+                documents=[full_text],
+                metadatas=[{"document": file_link}]
+            )
         except Exception as e:
             print(f"Error processing file {file_link}: {e}")
-
+        
 # Query the database
-query = "How does Arista's CloudVision platform help with network automation?"
+query = "What are Arista’s innovations in data-driven cloud networking?"
 results = collection.query(
     query_texts=[query],
     n_results=3
